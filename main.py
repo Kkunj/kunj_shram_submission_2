@@ -1,14 +1,3 @@
-# Memory-Enhanced CLI Chatbot - Fixed Version with OpenRouter
-# requirements.txt contents:
-"""
-chromadb==0.4.18
-pydantic==2.5.0
-python-dotenv==1.0.0
-httpx==0.25.2
-rich==13.7.0
-openai==1.3.0
-"""
-
 import os
 import json
 import uuid
@@ -31,13 +20,10 @@ from rich.prompt import Prompt
 from rich.table import Table
 from rich.live import Live
 
-# Load environment variables
 load_dotenv()
 
-# Configure rich console
 console = Console()
 
-# Configure minimal logging (only to file, no emojis)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -90,7 +76,7 @@ class Message:
     timestamp: datetime
 
 # =============================================================================
-# MODULE 1: MEMORY EXTRACTION ENGINE
+# MEMORY EXTRACTION
 # =============================================================================
 
 class MemoryExtractor:
@@ -134,14 +120,14 @@ Conversation to analyze:
         logger.info(f"Starting memory extraction for user {user_id}")
         
         try:
-            # Format conversation for analysis
+            
             conversation_text = "\n".join([
                 f"{msg.role}: {msg.content}" for msg in messages
             ])
             
             logger.info("Sending conversation to OpenRouter for memory analysis")
             
-            # Call OpenRouter API using OpenAI client
+            
             response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -156,7 +142,7 @@ Conversation to analyze:
             
             content = response.choices[0].message.content.strip()
             
-            # Parse JSON response
+            
             try:
                 if content.startswith('```json'):
                     content = content.split('```json')[1].split('```')[0]
@@ -197,7 +183,7 @@ Conversation to analyze:
             return []
 
 # =============================================================================
-# MODULE 2: MEMORY STORAGE MANAGER
+# MEMORY STORAGE
 # =============================================================================
 
 class MemoryStorage:
@@ -208,7 +194,7 @@ class MemoryStorage:
             settings=Settings(anonymized_telemetry=False)
         )
         self.collection = self.client.get_or_create_collection(
-            name="user_memories",
+            name="user_memories_v2",
             metadata={"hnsw:space": "cosine"}
         )
         logger.info("ChromaDB initialized successfully")
@@ -308,7 +294,7 @@ class MemoryStorage:
             return []
 
 # =============================================================================
-# MODULE 3: MEMORY RETRIEVAL SYSTEM
+# MEMORY RETRIEVAL 
 # =============================================================================
 
 class MemoryRetriever:
@@ -323,15 +309,14 @@ class MemoryRetriever:
             # First get all user memories, then filter by confidence
             all_memories = await self.storage.get_all_user_memories(user_id, limit=100)
             
-            # Filter by confidence
+          
             confident_memories = [m for m in all_memories if m.confidence >= min_confidence]
             
             if not confident_memories:
                 logger.info("No memories found matching criteria")
                 return []
             
-            # For now, return most recent memories that match confidence
-            # In a production system, you'd want to do semantic similarity here
+            # return most recent memories that match confidence
             recent_memories = confident_memories[:limit]
             
             logger.info(f"Found {len(recent_memories)} relevant memories")
@@ -345,7 +330,7 @@ class MemoryRetriever:
             return []
 
 # =============================================================================
-# MODULE 4: MEMORY UPDATE/DELETE HANDLER
+# MEMORY UPDATE/DELETE HANDLER
 # =============================================================================
 
 class MemoryUpdater:
@@ -445,7 +430,7 @@ Provide only the updated memory content, nothing else:
             return None
 
 # =============================================================================
-# MODULE 5: CONVERSATION INTEGRATION LAYER
+# CONVERSATION INTEGRATION 
 # =============================================================================
 
 class ConversationManager:
@@ -585,7 +570,7 @@ class MemoryChatbotCLI:
         
     def show_welcome(self):
         welcome_panel = Panel.fit(
-            Text("🤖 Memory-Enhanced Chatbot\n\nI'll remember our conversations and learn about you!", 
+            Text("Memory-Enhanced Chatbot\n\nI'll remember our conversations and learn about you!", 
                  style="bold blue", justify="center"),
             title="Welcome",
             border_style="blue"
@@ -685,7 +670,7 @@ class MemoryChatbotCLI:
                 
                 response_panel = Panel(
                     Text(response_text, style="white"),
-                    title="🤖 Assistant",
+                    title="Assistant",
                     border_style="green",
                     padding=(1, 2)
                 )
@@ -719,18 +704,15 @@ class MemoryChatbotCLI:
         await self.chat_loop()
 
 # =============================================================================
-# MAIN APPLICATION
+# MAIN FUNCTION
 # =============================================================================
 
 async def main():
-    # Create .env file template if it doesn't exist
+    # PLEASE MAKE SURE TO HAVE YOUR .env FILE SET UP WITH API KEYS.
     if not os.path.exists(".env"):
-        with open(".env", "w") as f:
-            f.write("OPENROUTER_API_KEY=your_openrouter_api_key_here\n")
-        console.print("[yellow]Created .env file template. Please add your OpenRouter API key.[/yellow]")
-        return
+        print("Create an env file and store your keys to start the chatbot.")
     
-    # Start the CLI chatbot
+    
     chatbot = MemoryChatbotCLI()
     await chatbot.run()
 
