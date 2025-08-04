@@ -115,14 +115,17 @@ Once the chatbot is running, you can use these commands:
 - **Exit**: Type `quit` or `exit` to close the chatbot
 
 ## Output Preview: Example Usage and testing
-First chat where user mentioned their preferences ( here the tools that they use )
+First chat, where user mentioned their preferences ( here the tools that they use )
 <img width="949" height="469" alt="image" src="https://github.com/user-attachments/assets/2c3e1d79-64af-4658-a362-5bb35360a2c2" />
 
 
-Second chat where extracts the pre-build memory for curating the answer.
+Second chat, where chatbot extracts the pre-build memory for curating the answer.
 <img width="948" height="361" alt="image" src="https://github.com/user-attachments/assets/f848855d-b7e0-4b00-9ad3-3e3cf9c167d4" />
 
-Third chat where user mentioned changes in their preferences ( which gets recorded efficiently ) and the memory is effectively updated.
+Third chat, where user mentioned changes in their preferences ( which gets recorded efficiently ) and the memory is effectively updated.
 <img width="973" height="774" alt="image" src="https://github.com/user-attachments/assets/ca7fe2cf-49f9-43c9-91e0-2d3cd40cfbfc" />
 
+---
+
+**🤞 EXCITED TO INTERACT WITH YOU IN THE INTERVIEW 🤞**
 
